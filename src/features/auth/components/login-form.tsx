@@ -1,14 +1,14 @@
 import { Formik, Form } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCallback, useMemo, useState } from "react";
 import { InputField } from "../../../components";
 import * as Yup from "yup";
-import { useAuth } from "../../../hooks/auth-context";
 import { LoginFormType } from "..";
+import { authService } from "../../../services/auth-service";
 
 export const LoginForm = () => {
-  const auth = useAuth();
-  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+  const [errorMsg, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
   const initialValues: LoginFormType = {
@@ -22,16 +22,25 @@ export const LoginForm = () => {
     });
   }, []);
   const onSubmit = useCallback(
-    async (values: LoginFormType) => {
-      const q = `?email=${values.email}`;
-      auth.login({
-        q: q,
-        setErrorMsg: setErrorMsg,
-        setLoading: setLoading,
-        values: values,
-      });
+    (values: LoginFormType) => {
+      setLoading(true);
+      authService
+        .login({
+          values: values,
+        })
+        .subscribe({
+          next: () => {
+            navigate("/");
+            setLoading(false);
+          },
+          error: (error) => {
+            setError(error.message);
+            setLoading(false);
+          },
+        });
     },
-    [auth]
+
+    [navigate]
   );
   return (
     <Formik
@@ -46,13 +55,13 @@ export const LoginForm = () => {
               label="Email Address"
               type="email"
               name="email"
-              setErrorMsg={setErrorMsg}
+              setErrorMsg={setError}
             />
             <InputField
               label="Password"
               name="password"
               type="password"
-              setErrorMsg={setErrorMsg}
+              setErrorMsg={setError}
             />
 
             <div className="text-center">

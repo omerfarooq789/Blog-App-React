@@ -4,8 +4,8 @@ import { InputField, TextareaField } from "../../../components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { BlogType } from "../types";
-import axios from "axios";
 import { UserType } from "../../auth";
+import axios from "axios";
 
 type AddPostType = {
   title: string;

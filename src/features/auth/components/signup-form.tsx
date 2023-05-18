@@ -2,14 +2,14 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { InputField } from "../../../components";
 import { useCallback, useMemo, useState } from "react";
-import { useAuth } from "../../../hooks/auth-context";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SignupFormType } from "../types";
+import { authService } from "../../../services/auth-service";
 
 export const SignupForm = () => {
-  const auth = useAuth();
-  const [errorMsg, setErrorMsg] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [errorMsg, setError] = useState("");
+  const [isLoading, setLoad] = useState(false);
+  const navigate = useNavigate();
 
   const initialValues: SignupFormType = {
     username: "",
@@ -37,15 +37,20 @@ export const SignupForm = () => {
   }, []);
   const onSubmit = useCallback(
     (values: SignupFormType) => {
-      const q = `?email=${values.email}`;
-      auth.signup({
-        q: q,
-        setErrorMsg: setErrorMsg,
-        setLoading: setLoading,
-        values: values,
+      setLoad(true);
+      authService.signup({ values }).subscribe({
+        next: () => {
+          navigate("/");
+          setLoad(false);
+        },
+        error: (error) => {
+          setError(error.message);
+          setLoad(false);
+        },
       });
     },
-    [auth]
+
+    [navigate]
   );
 
   return (
@@ -62,25 +67,25 @@ export const SignupForm = () => {
               label="User Name"
               type="text"
               name="username"
-              setErrorMsg={setErrorMsg}
+              setErrorMsg={setError}
             />
             <InputField
               label="Email Address"
               type="email"
               name="email"
-              setErrorMsg={setErrorMsg}
+              setErrorMsg={setError}
             />
             <InputField
               label="Password"
               name="password"
               type="password"
-              setErrorMsg={setErrorMsg}
+              setErrorMsg={setError}
             />
             <InputField
               label="Confirm Password"
               name="confirmPassword"
               type="password"
-              setErrorMsg={setErrorMsg}
+              setErrorMsg={setError}
             />
             <div className="text-center">
               <div className="error mb-3">{errorMsg}</div>

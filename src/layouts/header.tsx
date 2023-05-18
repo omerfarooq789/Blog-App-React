@@ -1,12 +1,10 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/auth-context";
+import { authService } from "../services/auth-service";
 type NavProps = {
   title: string;
 };
 export const Header = (props: NavProps) => {
-  const auth = useAuth();
-  const user = auth.user;
-
+  const isAuthorized = authService.isAuthenticated;
   const navigate = useNavigate();
 
   return (
@@ -15,7 +13,7 @@ export const Header = (props: NavProps) => {
         <Link className="navbar-brand" to="/">
           {props.title}
         </Link>
-        {user && (
+        {isAuthorized && (
           <ul className="navbar-nav flex-row" id="nav-hidden">
             <li className="nav-item me-1">
               <NavLink to="/" className="nav-link">
@@ -35,7 +33,7 @@ export const Header = (props: NavProps) => {
           </ul>
         )}
         <div>
-          {!user && (
+          {!isAuthorized && (
             <>
               <button
                 className="btn btn-primary me-2"
@@ -53,12 +51,12 @@ export const Header = (props: NavProps) => {
               </button>
             </>
           )}
-          {user && (
+          {isAuthorized && (
             <button
               className="btn btn-primary me-2"
               type="button"
               onClick={() => {
-                auth.logout();
+                authService.logout();
                 navigate("/");
               }}
             >

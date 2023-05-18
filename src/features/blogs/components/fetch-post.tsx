@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BlogType, UserType } from "../..";
 import { Post } from "..";
-import { useAuth } from "../../../hooks/auth-context";
 import axios from "axios";
 
 const API = `http://localhost:5000/posts`;
@@ -11,10 +10,10 @@ export const FetchPost = () => {
   const [isLoading, setLoading] = useState(false);
   const [posts, setPosts] = useState<BlogType[]>([]);
 
-  const auth = useAuth();
+  const auth = localStorage.getItem("user");
   let user: UserType = {} as UserType;
-  if (auth.user) {
-    user = JSON.parse(auth.user);
+  if (auth) {
+    user = JSON.parse(auth);
   }
 
   useEffect(() => {
