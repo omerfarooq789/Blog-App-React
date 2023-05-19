@@ -40,7 +40,7 @@ class AuthService {
             })
           );
         } else {
-          throw new Error("Email Already Exist");
+          throw new Error("Email Already Exists");
         }
       }),
       catchError((error) => {
