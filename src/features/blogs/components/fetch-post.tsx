@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BlogType, UserType } from "../..";
 import { Post } from "..";
 import axios from "axios";
+import { Box, Typography } from "@mui/material";
 
 const API = `http://localhost:5000/posts`;
 
@@ -37,10 +38,14 @@ export const FetchPost = () => {
   return (
     <>
       {isLoading && (
-        <h1 className="text-center text-primary l-font">Loading.........</h1>
+        <Typography variant="h2" textAlign={"center"} color={"primary"}>
+          Loading.........
+        </Typography>
       )}
       {empty && (
-        <h1 className="text-center text-primary">No Blogs Available</h1>
+        <Typography variant="h2" textAlign={"center"} color={"primary"}>
+          No Blogs Available
+        </Typography>
       )}
       {!empty &&
         posts.map((post: BlogType) => <Post post={post} key={post.id} />)}

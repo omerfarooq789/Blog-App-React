@@ -1,17 +1,21 @@
-import { ErrorMessage, Field } from "formik";
+import { Stack, TextField } from "@mui/material";
+import { useField } from "formik";
 type TextareaProps = {
   label: string;
   name: string;
 };
 
 export const TextareaField = ({ label, name }: TextareaProps) => {
+  const [field, meta] = useField(name);
+
+  const configTextField = {
+    ...field,
+    error: meta && meta.touched && meta.error ? true : false,
+    helperText: meta && meta.touched && meta.error ? meta.error : "",
+  };
   return (
-    <div className=" form-floating mb-4">
-      <Field className="form-control" as="textarea" name={name} id={name} />
-      <label className="form-label" htmlFor={name}>
-        {label}
-      </label>
-      <ErrorMessage name={name} className="error" component="div" />
-    </div>
+    <Stack spacing={2} my={3}>
+      <TextField label={label} {...configTextField} multiline rows={12} />
+    </Stack>
   );
 };

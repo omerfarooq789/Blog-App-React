@@ -3,6 +3,7 @@ import { BlogType } from "..";
 import { useParams } from "react-router-dom";
 import { PostDetail } from "..";
 import axios from "axios";
+import { Box } from "@mui/material";
 
 export const PostDetailLayout = () => {
   const { postId } = useParams();
@@ -20,10 +21,8 @@ export const PostDetailLayout = () => {
     getPosts();
   }, [postId]);
   return (
-    <div className="container-fluid pt-5 pb-5">
-      <div className="container">
-        {post.body ? <PostDetail post={post} /> : null}
-      </div>
-    </div>
+    <Box width={"70vw"} m="auto" mt={8}>
+      {post.body ? <PostDetail post={post} /> : null}
+    </Box>
   );
 };

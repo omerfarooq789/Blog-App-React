@@ -1,12 +1,22 @@
+import { Paper, Typography } from "@mui/material";
 import { layoutProp } from "..";
 
 export const Layout = ({ title, children }: layoutProp) => {
   return (
-    <div className="container mt-5">
-      <div className="col-4 m-auto  p-3 forms">
-        <h1 className="text-primary text-center mb-4">{title}</h1>
-        {children}
-      </div>
-    </div>
+    <Paper
+      sx={{
+        width: "25vw",
+        margin: "auto",
+        marginTop: "60px",
+        backgroundColor: "#eee",
+        padding: "25px",
+      }}
+      elevation={4}
+    >
+      <Typography variant="h3" textAlign={"center"} color={"primary"}>
+        {title.toUpperCase()}
+      </Typography>
+      {children}
+    </Paper>
   );
 };

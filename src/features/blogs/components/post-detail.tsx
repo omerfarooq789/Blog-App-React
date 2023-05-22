@@ -2,6 +2,19 @@ import { useNavigate } from "react-router-dom";
 import { GetPostProp } from "../types";
 import { UserType } from "../../auth";
 import axios from "axios";
+import {
+  Box,
+  Stack,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  Typography,
+  Paper,
+  Divider,
+} from "@mui/material";
 
 export const PostDetail = ({ post, limit = post.body.length }: GetPostProp) => {
   const navigate = useNavigate();
@@ -24,30 +37,43 @@ export const PostDetail = ({ post, limit = post.body.length }: GetPostProp) => {
   };
 
   return (
-    <div className="col text-center">
-      <div className="card  h-100">
-        <img className="card-img-top" src={src} height="200" alt="" />
-        <div className="card-body mt-3">
-          <h1 className="card-title">{post.title.toUpperCase()}</h1>
-          <p className="card-text mt-5">{description}</p>
-          {post.userId === userDetail.id && (
-            <>
-              <button
-                className="btn btn-primary mt-3 me-3"
+    <Paper elevation={4}>
+      <Card>
+        <CardMedia
+          component="img"
+          image={src}
+          height="200"
+          alt="Blog Image"
+        ></CardMedia>
+        <Box textAlign={"center"}>
+          <CardContent>
+            <Typography variant="h3" m={2} color={"primary"}>
+              {post.title.toUpperCase()}
+            </Typography>
+            <Typography> {description} </Typography>
+          </CardContent>
+        </Box>
+        {post.userId === userDetail.id && (
+          <CardActions sx={{ justifyContent: "center" }}>
+            <Stack direction="row" spacing={1} mb={2}>
+              <Button
+                variant="contained"
+                color="secondary"
                 onClick={() => navigate(`/edit_post/${post.id}`)}
               >
                 Edit
-              </button>
-              <button
-                className="btn btn-primary mt-3"
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
                 onClick={() => handleDelete(post.id)}
               >
                 Delete
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+              </Button>
+            </Stack>
+          </CardActions>
+        )}
+      </Card>
+    </Paper>
   );
 };

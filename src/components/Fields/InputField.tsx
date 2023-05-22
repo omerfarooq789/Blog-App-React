@@ -1,4 +1,5 @@
-import { ErrorMessage, useField } from "formik";
+import { Stack, TextField } from "@mui/material";
+import { useField } from "formik";
 import { ChangeEvent } from "react";
 type FieldSetProps = {
   label: string;
@@ -7,26 +8,30 @@ type FieldSetProps = {
   setErrorMsg?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const InputField = ({ label, setErrorMsg, ...props }: FieldSetProps) => {
-  const [field] = useField(props);
-  const { name, type } = props;
+export const InputField = ({
+  label,
+  setErrorMsg,
+  name,
+  ...props
+}: FieldSetProps) => {
+  const [field, meta] = useField(name);
+
+  const configTextField = {
+    ...field,
+    ...props,
+    error: meta && meta.touched && meta.error ? true : false,
+    helperText: meta && meta.touched && meta.error ? meta.error : "",
+    onChange: (e: ChangeEvent) => {
+      if (setErrorMsg) {
+        setErrorMsg("");
+      }
+      field.onChange(e);
+    },
+  };
+
   return (
-    <div className="form-floating mb-4">
-      <input
-        className="form-control"
-        {...field}
-        type={type}
-        onChange={(e: ChangeEvent) => {
-          if (setErrorMsg) {
-            setErrorMsg("");
-          }
-          field.onChange(e);
-        }}
-      />
-      <label className="form-label" htmlFor={name}>
-        {label}
-      </label>
-      <ErrorMessage name={name} className="error" component="div" />
-    </div>
+    <Stack spacing={2} my={3}>
+      <TextField label={label} {...configTextField} />
+    </Stack>
   );
 };

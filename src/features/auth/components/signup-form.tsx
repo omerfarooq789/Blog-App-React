@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SignupFormType } from "../types";
 import { authService } from "../../../services/auth-service";
+import { Button, Divider, Stack, Typography } from "@mui/material";
 
 export const SignupForm = () => {
   const [errorMsg, setError] = useState("");
@@ -40,8 +41,8 @@ export const SignupForm = () => {
       setLoad(true);
       authService.signup({ values }).subscribe({
         next: () => {
-          navigate("/");
           setLoad(false);
+          navigate("/");
         },
         error: (error) => {
           setError(error.message);
@@ -87,19 +88,16 @@ export const SignupForm = () => {
               type="password"
               setErrorMsg={setError}
             />
-            <div className="text-center">
-              <div className="error mb-3">{errorMsg}</div>
-              <button
-                type="submit"
-                className="btn btn-primary btn-block mb-3"
-                disabled={isLoading}
-              >
+            <Stack textAlign={"center"}>
+              <Typography>{errorMsg}</Typography>
+              <Button variant="contained" type="submit" disabled={isLoading}>
                 {isLoading ? "Loading..." : "Sign up"}
-              </button>
-              <p>
+              </Button>
+              <Divider color={"primary"} />
+              <Typography mt={2}>
                 Already have an account? <Link to="/login">Login</Link>
-              </p>
-            </div>
+              </Typography>
+            </Stack>
           </Form>
         );
       }}

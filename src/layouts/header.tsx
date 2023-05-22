@@ -1,5 +1,13 @@
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { authService } from "../services/auth-service";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Link,
+  Stack,
+  Button,
+} from "@mui/material";
 type NavProps = {
   title: string;
 };
@@ -8,63 +16,59 @@ export const Header = (props: NavProps) => {
   const navigate = useNavigate();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container flex-column flex-md-row">
-        <Link className="navbar-brand" to="/">
-          {props.title}
-        </Link>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <Link href="/" color="inherit" underline="none">
+            {props.title}
+          </Link>
+        </Typography>
         {isAuthorized && (
-          <ul className="navbar-nav flex-row" id="nav-hidden">
-            <li className="nav-item me-1">
-              <NavLink to="/" className="nav-link">
-                Home
-              </NavLink>
-            </li>
-            <li className="nav-item me-1">
-              <NavLink to="/my_post" className="nav-link">
-                My Blog
-              </NavLink>
-            </li>
-            <li className="nav-item me-1">
-              <NavLink to="/add_post" className="nav-link">
-                Add Blog
-              </NavLink>
-            </li>
-          </ul>
+          <Stack direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+            <Button color="inherit" component={Link} href="/">
+              Home
+            </Button>
+            <Button color="inherit" component={Link} href="/my_post">
+              My Blogs
+            </Button>
+            <Button color="inherit" component={Link} href="/add_post">
+              Add Blog
+            </Button>
+          </Stack>
         )}
-        <div>
-          {!isAuthorized && (
-            <>
-              <button
-                className="btn btn-primary me-2"
-                type="button"
-                onClick={() => navigate("login")}
-              >
-                Sign In <i className="fa fa-sign-in" aria-hidden="true"></i>
-              </button>
-              <button
-                className="btn btn-primary me-2"
-                type="button"
-                onClick={() => navigate("signup")}
-              >
-                Sign Up <i className="fa fa-user-plus" aria-hidden="true"></i>
-              </button>
-            </>
-          )}
-          {isAuthorized && (
-            <button
-              className="btn btn-primary me-2"
-              type="button"
+        {!isAuthorized && (
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => navigate("/login")}
+            >
+              Sign in
+            </Button>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => navigate("/signup")}
+            >
+              Sign up
+            </Button>
+          </Stack>
+        )}
+        {isAuthorized && (
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              color="inherit"
               onClick={() => {
                 authService.logout();
                 navigate("/");
               }}
             >
               Sign Out
-            </button>
-          )}
-        </div>
-      </div>
-    </nav>
+            </Button>
+          </Stack>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 };

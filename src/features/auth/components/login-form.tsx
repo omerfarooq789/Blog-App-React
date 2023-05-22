@@ -5,6 +5,7 @@ import { InputField } from "../../../components";
 import * as Yup from "yup";
 import { LoginFormType } from "..";
 import { authService } from "../../../services/auth-service";
+import { Stack, Button, Divider, Typography } from "@mui/material";
 
 export const LoginForm = () => {
   const navigate = useNavigate();
@@ -64,15 +65,16 @@ export const LoginForm = () => {
               setErrorMsg={setError}
             />
 
-            <div className="text-center">
-              <div className="error mb-3">{errorMsg}</div>
-              <button type="submit" className="btn btn-primary btn-block mb-4">
+            <Stack textAlign={"center"}>
+              <Typography>{errorMsg}</Typography>
+              <Button variant="contained" type="submit">
                 {isLoading ? "Loading..." : "Sign in"}
-              </button>
-              <p>
+              </Button>
+              <Divider color={"primary"} />
+              <Typography mt={2}>
                 Not a member? <Link to="/signup">Register</Link>
-              </p>
-            </div>
+              </Typography>
+            </Stack>
           </Form>
         );
       }}

@@ -1,9 +1,19 @@
+import { Paper } from "@mui/material";
 import { AddPostForm } from "..";
 
 export const AddPostLayout = () => {
   return (
-    <div className="col-6 m-auto pt-5 pb-5 text-start ">
+    <Paper
+      sx={{
+        width: "60vw",
+        margin: "auto",
+        marginTop: "60px",
+        backgroundColor: "#eee",
+        padding: "25px",
+      }}
+      elevation={2}
+    >
       <AddPostForm />
-    </div>
+    </Paper>
   );
 };

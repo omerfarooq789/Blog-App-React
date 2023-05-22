@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { BlogType } from "../types";
 import { UserType } from "../../auth";
 import axios from "axios";
+import { Button, Box } from "@mui/material";
 
 type AddPostType = {
   title: string;
@@ -77,11 +78,11 @@ export const AddPostForm = () => {
           <Form>
             <InputField label="Title" type="text" name="title" />
             <TextareaField label="Blog Details" name="blogBody" />
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary btn-block mb-3">
+            <Box textAlign={"center"}>
+              <Button variant="contained" type="submit" size="large">
                 {btnText}
-              </button>
-            </div>
+              </Button>
+            </Box>
           </Form>
         );
       }}

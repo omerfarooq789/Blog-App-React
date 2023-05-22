@@ -1,3 +1,5 @@
+import { Box, Typography } from "@mui/material";
+
 export const LandingPage = () => {
   // const [user, setUser] = useState("");
   // const auth = new AuthService();
@@ -13,13 +15,13 @@ export const LandingPage = () => {
   // }, []);
 
   return (
-    <>
-      <h1 className="text-center text-primary landing l-font">
+    <Box textAlign={"center"} mt={25}>
+      <Typography variant="h2" color={"primary"} mb={3}>
         WELCOME TO MY BLOG APP
-      </h1>
-      <h1 className="text-center text-primary mt-5 l-font">
+      </Typography>
+      <Typography variant="h2" color={"primary"}>
         Sign in To Continue
-      </h1>
-    </>
+      </Typography>
+    </Box>
   );
 };

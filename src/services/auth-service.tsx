@@ -1,7 +1,7 @@
 import Axios from "axios-observable";
 import { UserType } from "../features";
 import { LoginProps, SignupProps } from "../types";
-import { BehaviorSubject, catchError, map, throwError, concatMap } from "rxjs";
+import { BehaviorSubject, catchError, map, throwError, switchMap } from "rxjs";
 
 const axios = Axios.create({
   baseURL: "http://localhost:5000",
@@ -31,7 +31,7 @@ class AuthService {
       password: values.password,
     };
     return axios.get(`/users${q}`).pipe(
-      concatMap((res) => {
+      switchMap((res) => {
         if (res.data && res.data.length === 0) {
           return axios.post("/users", newData).pipe(
             map(({ data }: { data: UserType }) => {
@@ -42,9 +42,6 @@ class AuthService {
         } else {
           throw new Error("Email Already Exists");
         }
-      }),
-      catchError((error) => {
-        return throwError(() => new Error(error));
       })
     );
   }

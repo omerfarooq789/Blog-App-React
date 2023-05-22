@@ -1,3 +1,9 @@
+import { Typography } from "@mui/material";
+
 export const NoMatch = () => {
-  return <h1>404 Page Not Found</h1>;
+  return (
+    <Typography variant="h2" color={"primary"}>
+      No Page Found
+    </Typography>
+  );
 };
