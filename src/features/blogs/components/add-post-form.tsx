@@ -17,8 +17,7 @@ type AddPostType = {
 
 export const AddPostForm = () => {
   const { postId } = useParams();
-  const updateSubRef = useRef<Subscription | null>();
-  const postSubRef = useRef<Subscription | null>();
+  const subscriptionRef = useRef<Subscription | null>();
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogType>({} as BlogType);
   const [btnText, setBtnText] = useState("Add Post");
@@ -57,7 +56,7 @@ export const AddPostForm = () => {
         body: blogBody,
         userId: post.userId,
       };
-      updateSubRef.current = postServices
+      subscriptionRef.current = postServices
         .updatePost(`/${postId}`, updatedPost)
         .subscribe(() => {
           navigate("/");
@@ -69,26 +68,20 @@ export const AddPostForm = () => {
           body: blogBody,
           userId: currentUser.id,
         };
-        postSubRef.current = postServices.addPost(newPost).subscribe(() => {
-          navigate("/");
-        });
+        subscriptionRef.current = postServices
+          .addPost(newPost)
+          .subscribe(() => {
+            navigate("/");
+          });
       }
     }
   };
 
   useEffect(() => {
     return () => {
-      if (postSubRef.current && !postSubRef.current.closed) {
-        postSubRef.current.unsubscribe();
-        postSubRef.current = null;
-      }
-    };
-  }, []);
-  useEffect(() => {
-    return () => {
-      if (updateSubRef.current && !updateSubRef.current.closed) {
-        updateSubRef.current.unsubscribe();
-        updateSubRef.current = null;
+      if (subscriptionRef.current && !subscriptionRef.current.closed) {
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
       }
     };
   }, []);
