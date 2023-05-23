@@ -2,11 +2,13 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { InputField, TextareaField } from "../../../components";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { BlogType } from "../types";
-import { UserType } from "../../auth";
-import axios from "axios";
+import { useState, useEffect, useRef } from "react";
+import { BlogType, NewBlog } from "../types";
 import { Button, Box } from "@mui/material";
+import { postServices } from "../services/post-services";
+import { Subscription } from "rxjs";
+import { useObservable } from "rxjs-hooks";
+import { authService } from "../../../services/auth-service";
 
 type AddPostType = {
   title: string;
@@ -15,56 +17,82 @@ type AddPostType = {
 
 export const AddPostForm = () => {
   const { postId } = useParams();
+  const updateSubRef = useRef<Subscription | null>();
+  const postSubRef = useRef<Subscription | null>();
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogType>({} as BlogType);
   const [btnText, setBtnText] = useState("Add Post");
+  const currentUser = useObservable(() => authService.currentUser$);
+
   let initialValues: AddPostType = {
     title: post.title || "",
     blogBody: post.body || "",
   };
   useEffect(() => {
-    const getPosts = async () => {
-      if (postId) {
-        setBtnText("Loading...");
-        const res = await axios.get(`http://localhost:5000/posts?id=${postId}`);
-        const postData = res.data[0];
-        setPost(postData);
-        setBtnText("Update Post");
+    let subscription: Subscription;
+    if (postId) {
+      setBtnText("Loading");
+      subscription = postServices
+        .getPosts(`?id=${postId}`)
+        .subscribe((data) => {
+          setPost(data[0]);
+          setBtnText("Update Post");
+        });
+    }
+
+    return () => {
+      if (subscription && !subscription.closed) {
+        subscription.unsubscribe();
       }
     };
-
-    getPosts();
   }, [postId]);
   const validationSchema = Yup.object({
     title: Yup.string().required("Required!"),
     blogBody: Yup.string().required("Required!"),
   });
-  const onSubmit = async ({ title, blogBody }: AddPostType) => {
+  const onSubmit = ({ title, blogBody }: AddPostType) => {
     if (postId) {
-      const updatedPost = {
+      const updatedPost: NewBlog = {
         title,
         body: blogBody,
         userId: post.userId,
       };
-      await axios.put(`http://localhost:5000/posts/${postId}`, updatedPost);
-      navigate("/");
+      updateSubRef.current = postServices
+        .updatePost(`/${postId}`, updatedPost)
+        .subscribe(() => {
+          navigate("/");
+        });
     } else {
-      const session: string | null = localStorage.getItem("user");
-      let user: UserType = JSON.parse(session as string);
-      // const postsColRef = collection(db, "posts");
-      const newPost = {
-        title,
-        body: blogBody,
-        userId: user.id,
-      };
-      try {
-        await axios.post(`http://localhost:5000/posts`, newPost);
-        navigate("/");
-      } catch (error) {
-        console.error(error);
+      if (currentUser) {
+        const newPost: NewBlog = {
+          title,
+          body: blogBody,
+          userId: currentUser.id,
+        };
+        postSubRef.current = postServices.addPost(newPost).subscribe(() => {
+          navigate("/");
+        });
       }
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (postSubRef.current && !postSubRef.current.closed) {
+        postSubRef.current.unsubscribe();
+        postSubRef.current = null;
+      }
+    };
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (updateSubRef.current && !updateSubRef.current.closed) {
+        updateSubRef.current.unsubscribe();
+        updateSubRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <Formik
       enableReinitialize

@@ -1,16 +1,18 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { InputField } from "../../../components";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SignupFormType } from "../types";
 import { authService } from "../../../services/auth-service";
 import { Button, Divider, Stack, Typography } from "@mui/material";
+import { Subscription } from "rxjs";
 
 export const SignupForm = () => {
   const [errorMsg, setError] = useState("");
   const [isLoading, setLoad] = useState(false);
   const navigate = useNavigate();
+  const subscriptionRef = useRef<Subscription | null>();
 
   const initialValues: SignupFormType = {
     username: "",
@@ -39,7 +41,7 @@ export const SignupForm = () => {
   const onSubmit = useCallback(
     (values: SignupFormType) => {
       setLoad(true);
-      authService.signup({ values }).subscribe({
+      subscriptionRef.current = authService.signup({ values }).subscribe({
         next: () => {
           setLoad(false);
           navigate("/");
@@ -53,6 +55,14 @@ export const SignupForm = () => {
 
     [navigate]
   );
+  useEffect(() => {
+    return () => {
+      if (subscriptionRef.current && !subscriptionRef.current.closed) {
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <Formik

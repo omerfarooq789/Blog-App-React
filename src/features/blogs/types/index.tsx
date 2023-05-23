@@ -4,7 +4,11 @@ export type BlogType = {
   body: string;
   userId: number;
 };
-
+export type NewBlog = {
+  title: string;
+  body: string;
+  userId: number;
+};
 export type GetPostProp = {
   post: BlogType;
   limit?: number;

@@ -8,11 +8,22 @@ import {
   Stack,
   Button,
 } from "@mui/material";
+import { useObservable } from "rxjs-hooks";
+import { map } from "rxjs";
 type NavProps = {
   title: string;
 };
 export const Header = (props: NavProps) => {
-  const isAuthorized = authService.isAuthenticated;
+  let isAuthorized = false;
+  isAuthorized = useObservable(
+    () =>
+      authService.currentUser$.pipe(
+        map((res) => {
+          return !!res;
+        })
+      ),
+    isAuthorized
+  );
   const navigate = useNavigate();
 
   return (
@@ -25,13 +36,13 @@ export const Header = (props: NavProps) => {
         </Typography>
         {isAuthorized && (
           <Stack direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-            <Button color="inherit" component={Link} href="/">
+            <Button color="inherit" onClick={() => navigate("/")}>
               Home
             </Button>
-            <Button color="inherit" component={Link} href="/my_post">
+            <Button color="inherit" onClick={() => navigate("/my_post")}>
               My Blogs
             </Button>
-            <Button color="inherit" component={Link} href="/add_post">
+            <Button color="inherit" onClick={() => navigate("/add_post")}>
               Add Blog
             </Button>
           </Stack>

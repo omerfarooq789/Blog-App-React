@@ -1,7 +1,14 @@
 import Axios from "axios-observable";
 import { UserType } from "../features";
 import { LoginProps, SignupProps } from "../types";
-import { BehaviorSubject, catchError, map, throwError, switchMap } from "rxjs";
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  throwError,
+  switchMap,
+  Observable,
+} from "rxjs";
 
 const axios = Axios.create({
   baseURL: "http://localhost:5000",
@@ -13,15 +20,8 @@ const axios = Axios.create({
 class AuthService {
   private currentUserSubject = new BehaviorSubject<UserType | null>(null);
 
-  currentUser$ = this.currentUserSubject.asObservable();
-
-  get isAuthenticated(): boolean {
-    let session = localStorage.getItem("user");
-    if (session) {
-      this.currentUserSubject.next(JSON.parse(session));
-    }
-    return session ? true : false;
-  }
+  currentUser$: Observable<UserType | null> =
+    this.currentUserSubject.asObservable();
 
   signup({ values }: SignupProps) {
     const q = `?email=${values.email}`;

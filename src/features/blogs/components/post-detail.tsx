@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { GetPostProp } from "../types";
-import { UserType } from "../../auth";
-import axios from "axios";
 import {
   Box,
   Stack,
@@ -9,32 +7,39 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader,
   CardMedia,
   Typography,
   Paper,
-  Divider,
 } from "@mui/material";
+import { useEffect, useRef } from "react";
+import { Subscription } from "rxjs";
+import { postServices } from "../services/post-services";
+import { useObservable } from "rxjs-hooks";
+import { authService } from "../../../services/auth-service";
 
 export const PostDetail = ({ post, limit = post.body.length }: GetPostProp) => {
   const navigate = useNavigate();
-  const session: string | null = localStorage.getItem("user");
+  const delSubRef = useRef<Subscription | null>();
 
-  let userDetail: UserType;
-  userDetail = JSON.parse(session as string);
+  const currentUser = useObservable(() => authService.currentUser$);
 
   const description = post.body.slice(0, limit);
   const src = `https://picsum.photos/300/200?random=${post.title}`;
 
-  const handleDelete = async (id: number) => {
-    try {
-      // await deleteDoc(doc(db, "posts", id));
-      await axios.delete(`http://localhost:5000/posts/${id}`);
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
+  const handleDelete = (id: number) => {
+    delSubRef.current = postServices
+      .deletePost(`/${id}`)
+      .subscribe(() => navigate("/"));
   };
+
+  useEffect(() => {
+    return () => {
+      if (delSubRef.current && !delSubRef.current.closed) {
+        delSubRef.current.unsubscribe();
+        delSubRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <Paper elevation={4}>
@@ -53,7 +58,7 @@ export const PostDetail = ({ post, limit = post.body.length }: GetPostProp) => {
             <Typography> {description} </Typography>
           </CardContent>
         </Box>
-        {post.userId === userDetail.id && (
+        {currentUser && post.userId === currentUser.id && (
           <CardActions sx={{ justifyContent: "center" }}>
             <Stack direction="row" spacing={1} mb={2}>
               <Button
